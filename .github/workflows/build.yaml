@@ -26,11 +26,11 @@ jobs:
         - name: Build and tag container image
           working-directory: ./pizza_delivery
           run: |
-            docker build -t $ECR_REPO:latest -t $ECR:${GITHUB_SHA::7}-${GITHUB_RUN_ID::5} -f Dockerfile .
+            docker build -t ${{ secrets.REPO_NAME}}:latest -t ${{ secrets.REPO_NAME}}:${GITHUB_SHA::7}-${GITHUB_RUN_ID::5} -f Dockerfile .
 
         - name: Push image
           run: |
-              docker push $ECR_REPO --all-tags
+              docker push ${{ secrets.REPO_NAME}} --all-tags
         
         # - name: K8s cluster kubeconfig file with/ short-lived creds
         #     run: |
