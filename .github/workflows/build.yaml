@@ -32,9 +32,9 @@ jobs:
           run: |
               docker push ${{ secrets.REPO_NAME}} --all-tags
         
-        # - name: K8s cluster kubeconfig file with/ short-lived creds
-        #     run: |
-        #       doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ env.CLUSTER_NAME }}
+        #- name: K8s cluster kubeconfig file
+        #  run: |
+        #    aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} -- region ${{ secrets.AWS_REGION }}
 
         # - name: Update deployment secrets
         #     run: |

@@ -115,3 +115,5 @@ ecr_proxy_url = "183631329372.dkr.ecr.us-east-1.amazonaws.com/pizza-delivery-pro
 efs_csi_sa_role = "arn:aws:iam::183631329372:role/pizza-delivery-efs-csi20241014160436132700000015"
 efs_id = "fs-0bf519e31c5eaa1e5"
 region = "us-east-1"
+
+aws eks --region us-east-1 update-kubeconfig --name pizza-delivery-cluster
