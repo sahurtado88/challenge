@@ -14,12 +14,6 @@ output "ecr_app_url" {
   description = "ECR repo name for app"
   value       = aws_ecr_repository.app.repository_url
 }
-
-output "ecr_proxy_url" {
-  description = "ECR repo name for proxy"
-  value       = aws_ecr_repository.proxy.repository_url
-}
-
 output "efs_csi_sa_role" {
   value = module.efs_csi_irsa_role.iam_role_arn
 }

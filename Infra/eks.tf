@@ -16,7 +16,6 @@ module "eks" {
 
   iam_role_additional_policies = {
     AllowECRApp   = aws_iam_policy.allow_ecr_app.arn
-    AllowECRProxy = aws_iam_policy.allow_ecr_proxy.arn
   }
 
   eks_managed_node_group_defaults = {
