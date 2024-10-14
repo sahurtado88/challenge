@@ -42,7 +42,7 @@ jobs:
 
   CheckOut-Repo:
     runs-on: ubuntu-latest
-    environment: production
+    environment: prod
 
     defaults:
       run:
@@ -89,7 +89,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    # Initialize a new or existing Terraform working directory.
     - name: Terraform Init
       working-directory: Infra
       run: terraform init
