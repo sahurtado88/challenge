@@ -1,59 +1,46 @@
-resource "aws_ecr_repository" "app" {
-  name                 = "${var.prefix}-app"
-  image_tag_mutability = "MUTABLE"
-  force_delete         = true
+resource "aws_efs_file_system" "data" {
 
-  image_scanning_configuration {
-    scan_on_push = true
+  creation_token = "${module.eks.cluster_name}-data"
+  tags = {
+    Name = "${module.eks.cluster_name}-data"
   }
 }
 
-resource "aws_ecr_repository" "proxy" {
-  name                 = "${var.prefix}-proxy"
-  image_tag_mutability = "MUTABLE"
-  force_delete         = true
+resource "aws_efs_mount_target" "data" {
+  count           = length(module.vpc.private_subnets)
+  file_system_id  = aws_efs_file_system.data.id
+  subnet_id       = module.vpc.private_subnets[count.index]
+  security_groups = [aws_security_group.allow-efs.id]
+}
 
-  image_scanning_configuration {
-    scan_on_push = true
+resource "aws_security_group" "allow-efs" {
+  name        = "${local.cluster_name}-allow-efs-sg"
+  description = "Allow EFS access for EKS cluster."
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    from_port   = 2049
+    to_port     = 2049
+    protocol    = "tcp"
+    cidr_blocks = module.vpc.private_subnets_cidr_blocks
+  }
+
+  tags = {
+    Name = "Allow EFS access for ${local.cluster_name}"
   }
 }
 
-resource "aws_iam_policy" "allow_ecr_app" {
-  name = "${local.cluster_name}-read-ecr-app"
+module "efs_csi_irsa_role" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "~> 5.19.0"
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "ecr:BatchCheckLayerAvailability",
-          "ecr:BatchGetImage",
-          "ecr:GetDownloadUrlForLayer",
-          "ecr:GetAuthorizationToken"
-        ],
-        Resource = aws_ecr_repository.app.arn
-      }
-    ]
-  })
-}
+  role_name_prefix      = "${var.prefix}-efs-csi"
+  attach_efs_csi_policy = true
 
-resource "aws_iam_policy" "allow_ecr_proxy" {
-  name = "${local.cluster_name}-eks-read-ecr-proxy"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "ecr:BatchCheckLayerAvailability",
-          "ecr:BatchGetImage",
-          "ecr:GetDownloadUrlForLayer",
-          "ecr:GetAuthorizationToken"
-        ],
-        Resource = aws_ecr_repository.proxy.arn
-      }
-    ]
-  })
+  oidc_providers = {
+    one = {
+      provider_arn               = module.eks.oidc_provider_arn
+      namespace_service_accounts = ["kube-system:efs-csi-controller-sa"]
+    }
+  }
 }

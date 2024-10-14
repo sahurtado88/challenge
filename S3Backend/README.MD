@@ -1,23 +1,20 @@
-# Overview
+# REQUIREMENTS
 
-This Terraform module provisions the following resources:
+Ensure you have the following installed in advance of the stream:
 
-- IAM User: Creates a user in AWS IAM with administrative privileges.
-- S3 Bucket: Sets up an S3 bucket to store Terraform state files, with versioning enabled and a bucket policy attached.
-- DynamoDB Table: Creates a DynamoDB table for state locking and consistency checks when using Terraform.
+Terraform: https://developer.hashicorp.com/terra...
+Docker: https://docs.docker.com/engine/install/
+Kubernetes CLI (kubectl): https://kubernetes.io/docs/tasks/tool...
+Helm: https://helm.sh/docs/intro/quickstart...
+AWS account: https://aws.amazon.com/free/
+GIT
 
-# Usage Example
-Here is an example of how to use this Terraform module in your configuration:
 
-```
-module "backend" {
-  source      = "./modules/remotebackend"
-  iam_user    = var.iam_user
-  bucket_name = var.bucket_name
-  table_name  = var.table_name
-}
 
-```
+# Provision Infraestructure
+
+first we  want to create the backend to store our tf.state for this we are use the files that are in S3backend
+to execute this terraform files you need to go to teh folder S3Backend/ in this folder you need to creat a 
 create a .tfvar to configure the values on the variables according to the needs and environment
 
 In this example:
@@ -70,4 +67,27 @@ Both the S3 bucket and DynamoDB table have prevent_destroy lifecycle rules enabl
 
 Ensure that the AWS credentials configured in your environment have the necessary permissions to create IAM users, S3 buckets, and DynamoDB tables.
 
-This module is essential for managing Terraform state files securely and ensuring consistency during Terraform operations by using AWS best practices.    
+This module is essential for managing Terraform state files securely and ensuring consistency during Terraform operations by using AWS best practices.
+
+Know you have configured your backend its tiem to create the infraestructure in AWS 
+
+This Terraform project allows you to create a basic AWS infrastructure that includes:
+
+A VPC with public and private subnets.
+Route tables for each subnet.
+A security group to allow traffic on ports 80 and 443.
+An Elastic Load Balancer (ELB) listening on ports 80 and 443.
+A hosted zone in Route 53 and a CNAME record pointing to the ELB.
+The project is designed to be modular, making it easy to create and manage different environments (development, staging, production).
+
+Each module and environment has a variables.tf file where you can configure the specific values for your infrastructure.
+
+This project uses the partial configuration of the backend so you can deploy the infrastructure in different environments for this you need to edit or create in the folder state_configuration the values of bucket, key, dynamotable and region where you have your bucket and dynamo.
+
+Example partial configuration in state_configuration/dev-s3-state.hcl
+```
+bucket = "sterraform-remote-backend-s3-sahr2024-dev"
+key = "dev/terraform.tfstate"
+dynamodb_table = "terraform_state_locks-dev"
+region = "us-east-1"
+```

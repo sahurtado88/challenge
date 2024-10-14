@@ -26,8 +26,5 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 
-
 volumes:
-  # staticfiles:
-  #     external: true
   postgres_data:

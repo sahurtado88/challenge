@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-deployment
+  labels:
+    app: django-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: django-deployment
+  template:
+    metadata:
+      labels:
+        app: django-deployment
+    spec:
+      containers:
+      - name: django-k8s
+        image: 183631329372.dkr.ecr.us-east-1.amazonaws.com/pizza-delivery-app:latest
+        imagePullPolicy: Always
+        envFrom:
+          - secretRef:
+              name: django-k8s-prod-env
+        env:
+          - name: PORT
+            value: "8002"
+        ports:
+        - containerPort: 8002
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"   

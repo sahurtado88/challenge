@@ -4,9 +4,9 @@ module "db" {
   identifier = "${var.prefix}-db"
 
   engine         = "postgres"
-  engine_version = "14.7"
+  engine_version = "16.2"
   instance_class = "db.t4g.micro"
-  family         = "postgres14"
+  family         = "postgres16"
 
   allocated_storage   = 5
   skip_final_snapshot = true
