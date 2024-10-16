@@ -1,5 +1,5 @@
 environment = "prod"
-iam_user    = "terraform-prod"
+iam_user    = "user"
 bucket_name = "yourbucket"
 table_name  = "your table"
 region      = "us-east-1"
